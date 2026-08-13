@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forjex NFC</title>
+
+  <script>
+    const APP_SCRIPT =
+      "https://script.google.com/macros/s/AKfycbwepHN5YGPoMV3seUG0ykZJ6CAGJ1MxpT7HiC76ve99hahjgaweWmrZX9uI4xipQO1a0w/exec";
+
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+
+    if (id) {
+      window.location.replace(
+        APP_SCRIPT + "?id=" + encodeURIComponent(id)
+      );
+    }
+  </script>
+
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+
+    .box {
+      padding: 30px;
+    }
+
+    h1 {
+      letter-spacing: 5px;
+    }
+
+    p {
+      color: #aaa;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="box">
+    <h1>FORJEX</h1>
+    <p>Cargando tarjeta digital...</p>
+  </div>
+
+</body>
+</html>
