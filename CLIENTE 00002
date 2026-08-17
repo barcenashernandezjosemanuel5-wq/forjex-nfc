@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Forjex | Tarjeta digital</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background:
+        radial-gradient(circle at top, #222 0%, #090909 45%, #000 100%);
+      color: white;
+      padding: 18px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 430px;
+      margin: 15px auto;
+      padding: 28px 20px 24px;
+      background: rgba(10, 10, 10, 0.94);
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 28px;
+      text-align: center;
+      box-shadow:
+        0 15px 50px rgba(0,0,0,0.7),
+        inset 0 0 30px rgba(255,255,255,0.02);
+    }
+
+    .logo {
+      width: 100%;
+      max-width: 300px;
+      height: auto;
+      margin: 0 auto 15px;
+      display: block;
+    }
+
+    h1 {
+      margin: 5px 0 5px;
+      font-size: 30px;
+      font-weight: 700;
+    }
+
+    .puesto {
+      color: #bdbdbd;
+      font-size: 16px;
+      line-height: 1.5;
+      margin-bottom: 25px;
+    }
+
+    .linea {
+      width: 70px;
+      height: 1px;
+      background: #777;
+      margin: 15px auto 20px;
+    }
+
+    .boton {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 55px;
+      margin: 11px 0;
+      padding: 14px 18px;
+      border: 1px solid rgba(255,255,255,0.55);
+      border-radius: 15px;
+      background: linear-gradient(
+        135deg,
+        #ffffff 0%,
+        #dcdcdc 100%
+      );
+      color: #080808;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 700;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .boton:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(255,255,255,0.12);
+    }
+
+    .icono {
+      font-size: 21px;
+      margin-right: 10px;
+    }
+
+    .pie {
+      margin-top: 25px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(255,255,255,0.2);
+      color: #aaa;
+      font-size: 12px;
+      letter-spacing: 4px;
+    }
+
+    .error {
+      color: #ff7070;
+      font-weight: bold;
+    }
+
+    @media (max-width: 380px) {
+      .card {
+        padding: 23px 16px;
+      }
+
+      h1 {
+        font-size: 26px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card" id="app">
+    <p>Cargando tarjeta digital...</p>
+  </div>
+
+  <script>
+
+    const API =
+      "https://script.google.com/macros/s/AKfycbxH9DBsmgYwD62pFLREWHBObiZQZq53sd7ddnX-GXKnXRwkfKFm8AIBrX460MHTZDui/exec";
+
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+
+    const app = document.getElementById("app");
+
+
+    function instagramURL(valor) {
+
+      if (!valor) return "";
+
+      valor = valor.trim();
+
+      if (
+        valor.startsWith("http://") ||
+        valor.startsWith("https://")
+      ) {
+        return valor;
+      }
+
+      valor = valor.replace("@", "");
+
+      return "https://www.instagram.com/" + valor;
+    }
+
+
+    function facebookURL(valor) {
+
+      if (!valor) return "";
+
+      valor = valor.trim();
+
+      if (
+        valor.startsWith("http://") ||
+        valor.startsWith("https://")
+      ) {
+        return valor;
+      }
+
+      return "https://www.facebook.com/" + valor.replace("@", "");
+    }
+
+
+    function tiktokURL(valor) {
+
+      if (!valor) return "";
+
+      valor = valor.trim();
+
+      if (
+        valor.startsWith("http://") ||
+        valor.startsWith("https://")
+      ) {
+        return valor;
+      }
+
+      valor = valor.replace("@", "");
+
+      return "https://www.tiktok.com/@" + valor;
+    }
+
+
+    if (!id) {
+
+      app.innerHTML = `
+        <img class="logo" src="logo.png">
+
+        <h1>Forjex NFC</h1>
+
+        <div class="linea"></div>
+
+        <p class="error">
+          No se proporcionó un ID.
+        </p>
+      `;
+
+    } else {
+
+      fetch(API + "?id=" + encodeURIComponent(id))
+
+        .then(response => response.json())
+
+        .then(data => {
+
+          if (data.error) {
+            throw new Error(data.error);
+          }
+
+
+          const instagram = instagramURL(data.instagram);
+          const facebook = facebookURL(data.facebook);
+          const tiktok = tiktokURL(data.tiktok);
+
+
+          app.innerHTML = `
+
+            <img class="logo" src="logo.png">
+
+            <h1>${data.nombre}</h1>
+
+            <div class="puesto">
+              ${data.puesto || ""}
+              ${data.empresa ? `<br>${data.empresa}` : ""}
+            </div>
+
+            <div class="linea"></div>
+
+
+            ${
+              data.telefono
+              ? `
+                <a class="boton" href="tel:${data.telefono}">
+                  <span class="icono">📞</span>
+                  Llamar
+                </a>
+              `
+              : ""
+            }
+
+
+            ${
+              data.whatsapp
+              ? `
+                <a
+                  class="boton"
+                  href="https://wa.me/${data.whatsapp}"
+                  target="_blank"
+                >
+                  <span class="icono">💬</span>
+                  WhatsApp
+                </a>
+              `
+              : ""
+            }
+
+
+            ${
+              data.correo
+              ? `
+                <a class="boton" href="mailto:${data.correo}">
+                  <span class="icono">✉️</span>
+                  Correo
+                </a>
+              `
+              : ""
+            }
+
+
+            ${
+              instagram
+              ? `
+                <a
+                  class="boton"
+                  href="${instagram}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span class="icono">📸</span>
+                  Instagram
+                </a>
+              `
+              : ""
+            }
+
+
+            ${
+              facebook
+              ? `
+                <a
+                  class="boton"
+                  href="${facebook}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span class="icono">📘</span>
+                  Facebook
+                </a>
+              `
+              : ""
+            }
+
+
+            ${
+              tiktok
+              ? `
+                <a
+                  class="boton"
+                  href="${tiktok}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span class="icono">🎵</span>
+                  TikTok
+                </a>
+              `
+              : ""
+            }
+
+
+            <div class="pie">
+              FORJAMOS TU ESTILO
+            </div>
+
+          `;
+        })
+
+        .catch(error => {
+
+          app.innerHTML = `
+            <img class="logo" src="logo.png">
+
+            <h1>Ups...</h1>
+
+            <p class="error">
+              No pudimos cargar esta tarjeta.
+            </p>
+          `;
+
+          console.error(error);
+        });
+
+    }
+
+  </script>
+
+</body>
+</html>
